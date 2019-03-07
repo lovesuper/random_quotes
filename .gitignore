@@ -1,0 +1,10 @@
+*.pyc
+*.egg-info
+*.orig
+*.swp
+
+.env/*
+.eggs/*
+.idea/*
+
+config_local.py
