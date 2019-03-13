@@ -8,6 +8,11 @@ from db import DBSession, Quote
 app = Bottle()
 
 
+@app.route("/")
+def root():
+    return "Welcome!"
+
+
 @app.route("/quotes")
 def get_quotes():
     response.content_type = "application/json"

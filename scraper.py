@@ -66,9 +66,9 @@ def parse_quotes(times, delay):
     quotes = []
     for _ in range(times):
         quotes.extend(parse_bashim())
-        # quotes.extend(parse_ithappens())
-        # quotes.extend(parse_zadolbali())
-        # sleep(delay)
+        quotes.extend(parse_ithappens())
+        quotes.extend(parse_zadolbali())
+        sleep(delay)
 
     s = DBSession()
     objects = map(lambda x: Quote(text=x['text'], parsed_id=x['id']), quotes)
