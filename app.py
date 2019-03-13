@@ -1,3 +1,4 @@
+import os
 from json import dumps
 
 from bottle import run, response, Bottle
@@ -22,4 +23,7 @@ def get_quotes():
     return dumps(list(map(lambda x: x.jsonify(), quotes)))
 
 
-run(app, host="0.0.0.0", port=80)
+if os.environ.get('APP_LOCATION') == 'heroku':
+    run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+else:
+    run(host='localhost', port=8080, debug=True)
