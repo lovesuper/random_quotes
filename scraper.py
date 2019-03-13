@@ -1,11 +1,10 @@
 import re
-import sqlite3
 from time import sleep
 
 from bs4 import BeautifulSoup
 from requests import get
 
-from db import database
+from db import DBSession, Quote
 
 ITHAPPENS = "https://ithappens.me/random"
 BASHIM = "https://bash.im/random"
@@ -67,14 +66,15 @@ def parse_quotes(times, delay):
     quotes = []
     for _ in range(times):
         quotes.extend(parse_bashim())
-        quotes.extend(parse_ithappens())
-        quotes.extend(parse_zadolbali())
-        sleep(delay)
+        # quotes.extend(parse_ithappens())
+        # quotes.extend(parse_zadolbali())
+        # sleep(delay)
 
-    with sqlite3.connect(database) as c:
-        cur = c.cursor()
-        cur.executemany("INSERT INTO quotes(text, parsed_id) VALUES (?, ?);",
-                        map(lambda x: (x['text'], x['id']), quotes))
+    s = DBSession()
+    objects = map(lambda x: Quote(text=x['text'], parsed_id=x['id']), quotes)
+
+    s.bulk_save_objects(list(objects))
+    s.commit()
 
 
 if __name__ == "__main__":
