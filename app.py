@@ -1,73 +1,32 @@
-import re
+import sqlite3
 from json import dumps
 
 from bottle import run, response, Bottle
-from bs4 import BeautifulSoup
-from requests import get
 
-
-def remove_tags(text):
-    return re.compile(r"<[^>]+>").sub("", text)
-
+from db import database
 
 app = Bottle()
 
-ITHAPPENS = "https://ithappens.me/random"
-BASHIM = "https://bash.im/random"
-ZADOLBALI = "https://zadolba.li/"
+
+def dict_factory(cursor, row):
+    dictionary = {}
+    for idx, column in enumerate(cursor.description):
+        dictionary[column[0]] = row[idx]
+
+    return dictionary
 
 
-@app.route("/ithappens")
-def ithappens():
+@app.route("/quotes")
+def get_quotes():
     response.content_type = "application/json"
-    r = get(ITHAPPENS)
-    soup = BeautifulSoup(r.content, "html.parser")
-    articles = soup.find_all("div", attrs={"class": "story"})
-    result = []
-    for article in articles:
-        quote_body = article.find("div", attrs={"class": "text"}).text
-        quote_body = remove_tags(quote_body).replace("&quot;", "\"").replace("  ", "").strip()
-        id_ = article.find("div", attrs={"class": "id"}).text.strip()
-        result.append({"id": id_, "text": quote_body})
+    with sqlite3.connect(database) as c:
+        c.row_factory = dict_factory
+        cur = c.cursor()
+        cur.execute("SELECT text, parsed_id FROM quotes WHERE id IN "
+                    "(SELECT id FROM quotes ORDER BY RANDOM() LIMIT 100);")
+        quotes = cur.fetchall()
 
-    return dumps(result)
-
-
-@app.route("/bashim")
-def bashim():
-    response.content_type = "application/json"
-    r = get(BASHIM)
-    soup = BeautifulSoup(r.content, "html.parser")
-    articles = soup.find_all("div", attrs={"class": "quote__frame"})
-    result = []
-    for article in articles:
-        quote_body = article.find("div", attrs={"class": "quote__body"}).text
-        quote_body = remove_tags(quote_body).replace("&quot;", "\"").replace("  ", "").strip()
-        *_, id_ = article.find("a", attrs={"class": "quote__header_permalink"}).text,
-        result.append({"id": id_, "text": quote_body})
-
-    return dumps(result)
-
-
-@app.route("/zadolbali")
-def zadolbali():
-    response.content_type = "application/json"
-    r = get(ZADOLBALI)
-    soup = BeautifulSoup(r.content, "html.parser")
-    articles = soup.find_all("div", attrs={"class": "story"})
-    result = []
-    for article in articles:
-        quote_body = article.find("div", attrs={"class": "text"}).text
-        quote_body = (
-            remove_tags(quote_body).
-            replace("&quot;", "\"").
-            replace("  ", "").
-            replace(" ", "").strip()
-        )
-        *_, id_ = article.find("h2"). find("a"). get("href"). split("/")
-        result.append({"id": id_, "text": quote_body})
-
-    return dumps(result)
+        return dumps(quotes)
 
 
 run(app, host="127.0.0.1", port=8181)

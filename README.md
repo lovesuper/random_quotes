@@ -1,4 +1,4 @@
-# RandomBashim
+# Random Quotes
 
 This is an app for scrapping and distribute random bashim, zadolbali and ithappens quotes
 
@@ -6,11 +6,11 @@ This is an app for scrapping and distribute random bashim, zadolbali and ithappe
 
 `./setup.sh`
 
-Done.
+Done
 
 ## Example
 
-`GET http://127.0.0.1:8181/zadolbali`
+`GET http://127.0.0.1:8181/quotes`
 
 `RESPONSE JSON: [
     {

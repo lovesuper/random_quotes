@@ -2,9 +2,7 @@
 *.egg-info
 *.orig
 *.swp
-
+*.db
 .env/*
 .eggs/*
 .idea/*
-
-config_local.py
