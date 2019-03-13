@@ -1,9 +1,12 @@
+import os
+
 from sqlalchemy import Text, Integer, Column, String, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 Base = declarative_base()
-engine = create_engine("postgresql://user:user@localhost/quotes_db")
+DATABASE_URL = os.environ['DATABASE_URL']
+engine = create_engine(DATABASE_URL)
 DBSession = sessionmaker(bind=engine)
 
 
