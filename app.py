@@ -1,4 +1,3 @@
-import os
 from json import dumps
 
 from bottle import run, response, Bottle
@@ -6,7 +5,7 @@ from sqlalchemy import func
 
 from db import DBSession, Quote
 
-app = application = Bottle()
+app = Bottle()
 
 
 @app.route("/")
@@ -23,7 +22,5 @@ def get_quotes():
     return dumps(list(map(lambda x: x.jsonify(), quotes)))
 
 
-if os.environ.get('APP_LOCATION') == 'heroku':
-    run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-else:
-    run(host='localhost', port=8080, debug=True)
+if __name__ == '__main__':
+    run(app, host="127.0.0.1", port=8181)
