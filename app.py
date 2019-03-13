@@ -5,7 +5,7 @@ from sqlalchemy import func
 
 from db import DBSession, Quote
 
-app = Bottle()
+app = application = Bottle()
 
 
 @app.route("/")
